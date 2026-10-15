@@ -25,11 +25,30 @@ public class MatchingService{
            
         }
 
+        return words;        
+    }
 
+    public double jaccardSimilarity(Set<String> first, Set<String> second){
 
-        return words;
+        Set<String> intersection= new HashSet<>(first);
+        Set<String> union= new HashSet<>(first);
+        intersection.retainAll(second);
+        union.addAll(second);
 
+        if(union.isEmpty()){
+            return 0.0;
+        }
         
+        return (double)intersection.size()/union.size();
+    }
+    public double descriptionSimilarity(String first, String second){
+
+        Set<String> firstSet= tokenize(first);
+        Set<String> secondSet= tokenize(second);
+        if(firstSet.isEmpty() || secondSet.isEmpty()){
+            return 0.0;
+        }
+        return jaccardSimilarity(firstSet, secondSet);
     }
 
 }
