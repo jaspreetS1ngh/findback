@@ -15,7 +15,7 @@ public class MatchingService{
     final double COLOR_WEIGHT =30.0;
     final double LOCATION_WEIGHT= 30.0;
      final double DESCRIPTION_WEIGHT= 40.0;
-     
+
 
     public Set<String> tokenize(String description){
         Set<String> words= new HashSet<>();
@@ -87,10 +87,10 @@ public class MatchingService{
         if(first==null ||second==null || first.isBlank() || second.isBlank() ){
             return false;
         }
-        first.strip();
-        second.strip();
+       String normalizedFirst= first.strip();
+       String normalizedSecond= second.strip();
 
-        return first.equalsIgnoreCase(second)?true:false;
+        return normalizedFirst.equalsIgnoreCase(normalizedSecond);
 
     }
 
