@@ -1,12 +1,11 @@
 package com.example.findback.matching;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.AccessFlag.Location;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 
+import com.example.findback.report.CampusLocation;
 import com.example.findback.report.ItemReport;
 import com.example.findback.report.ReportType;
 
@@ -91,6 +90,33 @@ public class MatchingService{
        String normalizedSecond= second.strip();
 
         return normalizedFirst.equalsIgnoreCase(normalizedSecond);
+
+    }
+    public MatchResult compare(ItemReport lost, ItemReport found){
+        if(!isEligible(lost, found)){
+            return new MatchResult(found.getId(), false, 0.0, List.of("Reports do not satisfy matching eligibility rules"));
+        }
+        double score= 0.0;
+        List<String> reasons= new ArrayList<>();
+        if(colorsMatch(lost.getColor(), found.getColor())){
+            score+=COLOR_WEIGHT;
+            reasons.add("Colour matches");
+        }
+        if(lost.getLocation()!=CampusLocation.OTHER && lost.getLocation()==found.getLocation()){
+            score+=LOCATION_WEIGHT;
+            reasons.add("Location matches");
+        }
+        double similarity= descriptionSimilarity(lost.getDescription(), found.getDescription());
+        double descriptionPoints= similarity*DESCRIPTION_WEIGHT;
+        score+=descriptionPoints;
+        if(descriptionPoints>0){
+            reasons.add("Description overlap contributes " + descriptionPoints +" points");
+        }
+        if(score==0){
+            reasons.add("No matching colour, location, or description evidence");
+        }
+        return new MatchResult(found.getId(), true, score, reasons);
+       
 
     }
 
